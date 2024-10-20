@@ -45,11 +45,11 @@ class Worker(threading.Thread):
         self.t = queue.Queue(max_thread_num)
 
     @retry(max_retries=-1, delay=3)
-    def push(self, client_id: str):
+    def pull(self, client_id: str):
         logger.info(f"Push => {client_id}")
         data = {'client_id': client_id, 'worker_id': self.worker_id}
         stub = easycrawler_pb2_grpc.EasyCrawlerServiceStub(self.grpc)
-        response_iterator = stub.Push(easycrawler_pb2.Message(data=json.dumps(data)))
+        response_iterator = stub.Pull(easycrawler_pb2.Message(data=json.dumps(data)))
         work_dir = osp.join(self.worker_dir, f'{client_id}')
         os.makedirs(work_dir, exist_ok=True)
         zip_file_path = osp.join(work_dir, f'{client_id}.zip')
@@ -66,12 +66,13 @@ class Worker(threading.Thread):
         stub = easycrawler_pb2_grpc.EasyCrawlerServiceStub(self.grpc)
         result = stub.GetTask(easycrawler_pb2.Message(data=self.worker_id))
         if result.code == easycrawler_pb2.WORKER_NOT_UPDATE:
-            self.push(result.message)
+            self.pull(result.message)
             raise Exception('Worker not update!')
         if result.code != easycrawler_pb2.SUCCESS:
             raise Exception(result.message)
         meta = json.loads(result.message)
         logger.info(f"Get meta success! => {meta}")
+        return meta
 
     @retry(max_retries=-1, delay=3)
     def on_result(self, result: typing.Dict):

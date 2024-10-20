@@ -11,6 +11,7 @@ Change Log  :
 
 """
 import json
+import os
 import queue
 import traceback
 import typing
@@ -157,6 +158,7 @@ class Crawler:
         for meta_str in message.cache_queue.values():
             message.task_queue.append(meta_str)
         self.client.start()
+        self.client.push(os.getcwd())
         while not self.is_down:
             self.try_get_meta()
             self.try_handle_result()

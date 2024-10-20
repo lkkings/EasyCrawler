@@ -39,7 +39,7 @@ class ServiceServicer(easycrawler_pb2_grpc.EasyCrawlerServiceServicer):
         self.max_task_cache_size = max_task_cache_size
         self.all_task_cache_size = 0
 
-    def Pull(self, request_iterator, context):
+    def Push(self, request_iterator, context):
         first_chunk = next(request_iterator)
         client_id = first_chunk.client_id
         file_path = osp.join(self.container_dir, f'{client_id}.zip')
@@ -50,7 +50,7 @@ class ServiceServicer(easycrawler_pb2_grpc.EasyCrawlerServiceServicer):
         self.client_of_workers[client_id] = []
         return easycrawler_pb2.Result(code=easycrawler_pb2.SUCCESS, message=None)
 
-    def Push(self, message, context):
+    def Pull(self, message, context):
         message = json.loads(message.data)
         client_id = message['client_id']
         worker_id = message['worker_id']

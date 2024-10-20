@@ -31,12 +31,12 @@ class Client(threading.Thread):
                 )
 
     @retry(max_retries=-1, delay=3)
-    def pull(self, folder: str):
+    def push(self, folder: str):
         """上传文件并返回结果."""
         zip_file_path = zip_folder(folder)
         logger.info(f"Pull => {zip_file_path}")
         stub = easycrawler_pb2_grpc.EasyCrawlerServiceStub(self.grpc)
-        result = stub.Pull(self.chunk_generator(zip_file_path))
+        result = stub.Push(self.chunk_generator(zip_file_path))
         if result.code != easycrawler_pb2.SUCCESS:
             raise Exception(result.message)
         logger.info(f"Pull success!")
