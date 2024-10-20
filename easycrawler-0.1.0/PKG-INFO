@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: easycrawler
+Version: 0.1.0
+Summary: 通过反向连接实现的分布式爬虫框架.
+Author: lkkings
+Author-email: lkkings888@gmail.com
+Requires-Python: >=3.7

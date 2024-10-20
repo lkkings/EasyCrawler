@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package easycrawler;
+
+service EasyCrawlerService {
+    rpc Pull (stream Chunk) returns (Result);
+    rpc Push (Message) returns (stream Chunk);
+    rpc AddMeta (Message) returns (Result);
+    rpc GetMeta (Message) returns (Result);
+    rpc OnResult (Message) returns (Result);
+    rpc GetResult (Message) returns (Result);
+    rpc DelClient (Message) returns (Result);
+}
+
+
+message Chunk {
+    string client_id = 1;
+    bytes data = 2;
+}
+
+
+message Message{
+    string data = 1;
+}
+
+enum Code {
+    SUCCESS = 0;
+    CLIENT_NOT_FOUND = 1;
+    TASK_QUEUE_FULL = 2;
+    TASK_QUEUE_EMPTY = 3;
+    WORKER_NOT_UPDATE = 4;
+    CLIENT_RESULT_EMPTY = 5;
+    CLIENT_IS_FULL=6;
+}
+
+message Result {
+    Code code = 1;
+    string message = 2;
+}

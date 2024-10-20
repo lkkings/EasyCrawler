@@ -1,10 +1,9 @@
-id: '431'
-project: ''
-
+id: '199'
+project: '樱花动漫'
 redis:
   host: '192.168.20.169'
   port: 6379
-  db: 4
+  db: 5
   password:
   max_connections: 2000
   decode_responses: true
@@ -12,7 +11,8 @@ redis:
 
 storage:
   type: 'mongodb'
-  batch_size: 1
-  uri: 'mongodb://192.168.20.169:27017/'
-  database_name: ''
-  collection_name: ''
+  uri: 'mongodb://192.168.20.169:27017'
+  db_name: '中文视频'
+
+ftp:
+  url:
