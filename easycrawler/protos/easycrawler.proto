@@ -3,8 +3,8 @@ syntax = "proto3";
 package easycrawler;
 
 service EasyCrawlerService {
-    rpc Pull (stream Chunk) returns (Result);
-    rpc Push (Message) returns (stream Chunk);
+    rpc Push (stream Chunk) returns (Result);
+    rpc Pull (Message) returns (stream Chunk);
     rpc AddMeta (Message) returns (Result);
     rpc GetMeta (Message) returns (Result);
     rpc OnResult (Message) returns (Result);

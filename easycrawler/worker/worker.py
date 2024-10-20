@@ -34,7 +34,8 @@ class Worker(threading.Thread):
     def __init__(self, worker_id: str, server_address: str, max_thread_num: int, worker_dir=None):
         super().__init__()
         if worker_dir is None:
-            self.worker_dir = osp.join(osp.expanduser("~"), 'easycrawler', 'worker')
+            worker_dir = osp.join(osp.expanduser("~"), 'easycrawler', 'worker')
+        self.worker_dir = worker_dir
         os.makedirs(self.worker_dir, exist_ok=True)
         self.running = False
         self.worker_id = worker_id
@@ -64,7 +65,7 @@ class Worker(threading.Thread):
     def get_meta(self) -> typing.Dict:
         logger.info(f"Get meta => {self.worker_id}")
         stub = easycrawler_pb2_grpc.EasyCrawlerServiceStub(self.grpc)
-        result = stub.GetTask(easycrawler_pb2.Message(data=self.worker_id))
+        result = stub.GetMeta(easycrawler_pb2.Message(data=self.worker_id))
         if result.code == easycrawler_pb2.WORKER_NOT_UPDATE:
             self.pull(result.message)
             raise Exception('Worker not update!')

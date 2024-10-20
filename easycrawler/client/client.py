@@ -12,7 +12,7 @@ from easycrawler.protos import easycrawler_pb2_grpc, easycrawler_pb2
 
 
 class Client(threading.Thread):
-    def __init__(self, client_id: str, server_address):
+    def __init__(self, server_address:str,client_id: str):
         super().__init__()
         self.client_id = client_id
         self.server_address = server_address
@@ -34,15 +34,15 @@ class Client(threading.Thread):
     def push(self, folder: str):
         """上传文件并返回结果."""
         zip_file_path = zip_folder(folder)
-        logger.info(f"Pull => {zip_file_path}")
+        logger.info(f"Push => {zip_file_path}")
         stub = easycrawler_pb2_grpc.EasyCrawlerServiceStub(self.grpc)
         result = stub.Push(self.chunk_generator(zip_file_path))
         if result.code != easycrawler_pb2.SUCCESS:
             raise Exception(result.message)
-        logger.info(f"Pull success!")
+        logger.info(f"Push success!")
 
     def add_task(self, meta: typing.Dict):
-        logger.info(f"AddTask => {meta}")
+        logger.info(f"AddMeta => {meta}")
         stub = easycrawler_pb2_grpc.EasyCrawlerServiceStub(self.grpc)
         meta['__client_id__'] = self.client_id
         data = json.dumps(meta, ensure_ascii=False)
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     client = Client(server_address='127.0.0.1:8888', client_id='test')
 
     # 示例：上传文件
-    upload_result = client.pull(r'D:\Project\Python\EasyCrawler\easycrawler\worker')
+    upload_result = client.push(r'D:\Project\Python\EasyCrawler\easycrawler\worker')
     for i in range(1000):
         client.add_task({'test': 'sfesssssssssss'})
     print(upload_result)

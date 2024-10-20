@@ -64,7 +64,7 @@ class Worker(threading.Thread):
     def get_meta(self) -> typing.Dict:
         logger.info(f"Get meta => {self.worker_id}")
         stub = easycrawler_pb2_grpc.EasyCrawlerServiceStub(self.grpc)
-        result = stub.GetTask(easycrawler_pb2.Message(data=self.worker_id))
+        result = stub.GetMeta(easycrawler_pb2.Message(data=self.worker_id))
         if result.code == easycrawler_pb2.WORKER_NOT_UPDATE:
             self.push(result.message)
             raise Exception('Worker not update!')

@@ -14,13 +14,13 @@ class EasyCrawlerServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.Pull = channel.stream_unary(
-                '/easycrawler.EasyCrawlerService/Pull',
+        self.Push = channel.stream_unary(
+                '/easycrawler.EasyCrawlerService/Push',
                 request_serializer=easycrawler__pb2.Chunk.SerializeToString,
                 response_deserializer=easycrawler__pb2.Result.FromString,
                 )
-        self.Push = channel.unary_stream(
-                '/easycrawler.EasyCrawlerService/Push',
+        self.Pull = channel.unary_stream(
+                '/easycrawler.EasyCrawlerService/Pull',
                 request_serializer=easycrawler__pb2.Message.SerializeToString,
                 response_deserializer=easycrawler__pb2.Chunk.FromString,
                 )
@@ -54,13 +54,13 @@ class EasyCrawlerServiceStub(object):
 class EasyCrawlerServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def Pull(self, request_iterator, context):
+    def Push(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def Push(self, request, context):
+    def Pull(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -99,13 +99,13 @@ class EasyCrawlerServiceServicer(object):
 
 def add_EasyCrawlerServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'Pull': grpc.stream_unary_rpc_method_handler(
-                    servicer.Pull,
+            'Push': grpc.stream_unary_rpc_method_handler(
+                    servicer.Push,
                     request_deserializer=easycrawler__pb2.Chunk.FromString,
                     response_serializer=easycrawler__pb2.Result.SerializeToString,
             ),
-            'Push': grpc.unary_stream_rpc_method_handler(
-                    servicer.Push,
+            'Pull': grpc.unary_stream_rpc_method_handler(
+                    servicer.Pull,
                     request_deserializer=easycrawler__pb2.Message.FromString,
                     response_serializer=easycrawler__pb2.Chunk.SerializeToString,
             ),
@@ -145,7 +145,7 @@ class EasyCrawlerService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def Pull(request_iterator,
+    def Push(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -155,14 +155,14 @@ class EasyCrawlerService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_unary(request_iterator, target, '/easycrawler.EasyCrawlerService/Pull',
+        return grpc.experimental.stream_unary(request_iterator, target, '/easycrawler.EasyCrawlerService/Push',
             easycrawler__pb2.Chunk.SerializeToString,
             easycrawler__pb2.Result.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def Push(request,
+    def Pull(request,
             target,
             options=(),
             channel_credentials=None,
@@ -172,7 +172,7 @@ class EasyCrawlerService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/easycrawler.EasyCrawlerService/Push',
+        return grpc.experimental.unary_stream(request, target, '/easycrawler.EasyCrawlerService/Pull',
             easycrawler__pb2.Message.SerializeToString,
             easycrawler__pb2.Chunk.FromString,
             options, channel_credentials,
