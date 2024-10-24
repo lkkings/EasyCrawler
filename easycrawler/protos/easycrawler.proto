@@ -31,6 +31,8 @@ enum Code {
     WORKER_NOT_UPDATE = 4;
     CLIENT_RESULT_EMPTY = 5;
     CLIENT_IS_FULL=6;
+    CLIENT_IS_CLOSED=7;
+    ERROR = 8;
 }
 
 message Result {

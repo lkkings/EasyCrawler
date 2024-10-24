@@ -12,6 +12,7 @@ Change Log  :
 """
 import signal
 import threading
+import traceback
 from collections import deque
 from functools import wraps
 
@@ -20,6 +21,7 @@ import hashlib
 import json
 import time
 
+from easycrawler.exceptions import RateLimitExceeded, TimeoutException
 from easycrawler.logs import logger
 
 
@@ -52,6 +54,7 @@ def retry(max_retries=3, delay=1, exceptions=(Exception,)):
                 try:
                     return func(*args, **kwargs)
                 except exceptions as e:
+                    traceback.print_exc()
                     retries += 1
                     logger.error(f"Retrying {func.__name__} (attempt {retries}) due to {e}")
                     time.sleep(delay)
@@ -62,37 +65,46 @@ def retry(max_retries=3, delay=1, exceptions=(Exception,)):
     return decorator
 
 
-def rate_limit(max_calls, period):
+def rate_limit(max_calls, period, raise_error=False):
     """访问频率限制修饰器。
 
     :param max_calls: 时间窗口内的最大调用次数
     :param period: 时间窗口，单位为秒
+    :param raise_error: 频率过快是否抛出异常
     """
 
     def decorator(func):
         calls = deque()
+        lock = threading.Lock()
 
         @wraps(func)
         def wrapper(*args, **kwargs):
             current_time = time.time()
 
-            # 清理超过时间窗口的调用记录
-            while calls and calls[0] < current_time - period:
-                calls.popleft()
+            with lock:
+                # 清理超过时间窗口的调用记录
+                while calls and calls[0] < current_time - period:
+                    calls.popleft()
 
-            if len(calls) >= max_calls:
-                raise RuntimeError("Too many calls, rate limit exceeded.")
+                if len(calls) >= max_calls:
+                    if raise_error:
+                        raise RateLimitExceeded(f"Rate limit exceeded: Max {max_calls} calls in {period} seconds.")
+                        # 计算下一次允许调用的时间
+                    wait_time = period - (current_time - calls[0])
+                    time.sleep(wait_time)
+                    current_time = time.time()
 
-            calls.append(current_time)
+                    # 再次清理已过期的调用记录
+                    while calls and calls[0] < current_time - period:
+                        calls.popleft()
+
+                calls.append(current_time)
+
             return func(*args, **kwargs)
 
         return wrapper
 
     return decorator
-
-
-class TimeoutException(Exception):
-    pass
 
 
 def timeout(seconds):

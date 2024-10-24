@@ -1,5 +1,6 @@
 import os
 import re
+import uuid
 
 import click
 import typing
@@ -137,17 +138,18 @@ def valid_client_id(ctx, param, value) -> str:
     help='最大客户端连接数'
 )
 @click.option(
+    '--max-cache',
+    type=click.IntRange(1, 1000000),
+    default=1000000,
+    help='最大任务缓存数'
+)
+@click.option(
     '--container-dir',
     type=str,
     default=osp.expanduser("~"),
     help='工作路径'
 )
-@click.option(
-    '--max-cache',
-    type=str,
-    default=10000,
-    help='最大任务缓存数'
-)
+
 @click.pass_context
 def master(ctx: click.Context, port: int, max_clients: int, max_cache: int,container_dir:str) -> None:
     serve(port, max_clients, max_cache, container_dir)
@@ -163,8 +165,8 @@ def master(ctx: click.Context, port: int, max_clients: int, max_cache: int,conta
 @click.option(
     '--worker-id',
     type=str,
-    default=1000,
-    help='工作节点最大客户端连接数',
+    default=uuid.uuid4(),
+    help='工作节点Id',
     callback=valid_client_id
 )
 @click.option(
@@ -173,15 +175,9 @@ def master(ctx: click.Context, port: int, max_clients: int, max_cache: int,conta
     default=osp.join(osp.expanduser("~"), 'easycrawler', 'worker'),
     help='工作路径'
 )
-@click.option(
-    '--max-thread',
-    type=click.IntRange(1, 1000),
-    default=5,
-    help='工作节点最大线程数'
-)
 @click.pass_context
-def client(ctx: click.Context, address: str, worker_id: str, max_thread: int, worker_dir: str) -> None:
-    worker = Worker(server_address=address, worker_id=worker_id, max_thread_num=max_thread, worker_dir=worker_dir)
+def client(ctx: click.Context, address: str, worker_id: str, worker_dir: str) -> None:
+    worker = Worker(server_address=address, worker_id=worker_id, worker_dir=worker_dir)
     worker.start()
     worker.join()
 

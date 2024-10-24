@@ -13,18 +13,22 @@ Change Log  :
 import os.path
 import typing
 
+from easycrawler.client import Client
 from easycrawler.crawler import crawler
 from easycrawler.logs import logger
 from easycrawler.utils.file_util import get_video_info
 
 runtime_env = {
     'pip': [],
-    'files': []
+    'files': {
+        'test.txt': 'data.txt'
+    },
+    'tasks': ['task1.py', 'task2.py'],
 }
 
 
 # 192.168.20.169:6666
-@crawler.init(address='192.168.20.169:10000', runtime_env=runtime_env)
+@crawler.init(address='localhost:8888', runtime_env=runtime_env)
 def init():
     crawler.add_task('链接爬取任务', {'url': f'https://www.yinghua8.net/class/2/page/19.html'})
 
@@ -57,9 +61,18 @@ def fail(result: typing.Dict):
     logger.error(result)
 
 
-@crawler.callback()
-def callback(result: typing.Dict):
-    pass
 
 
-crawler.run()
+if __name__ == "__main__":
+    runtime_env = {
+        'pip': [],
+        'files': {
+            'test.txt': 'data.txt'
+        },
+        'tasks': ['task1.py', 'task2.py'],
+    }
+
+    client = Client(server_address='127.0.0.1:8888', client_id='test',runtime_env=runtime_env)
+
+    # 示例：上传文件
+    upload_result = client.push()

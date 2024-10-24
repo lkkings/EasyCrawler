@@ -32,7 +32,6 @@ def unzip_file(zip_file_path, extract_to_folder):
 
     with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
         zip_ref.extractall(extract_to_folder)
-    os.remove(zip_file_path)
 
 
 def get_audio_info(file_path):

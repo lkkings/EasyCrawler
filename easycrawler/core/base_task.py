@@ -26,6 +26,8 @@ from easycrawler.utils import get_value_by_path
 class Task:
     item = {}
 
+    max_threads = 10
+
     name = 'common'
 
     lx = LxParse()
@@ -78,13 +80,27 @@ class Task:
     def test(self, meta: typing.Dict):
         _meta = {
             '__id__': 'test',
-            '__task__': f'{self.name} 测试',
+            '__client_id__': 'test',
+            '__worker_id__': 'test',
+            '__task__': f'{self.name} 测试'
         }
         meta.update(_meta)
         self.init()
-        text, items = self.exec(meta)
+        info = self.exec(meta)
         self.stop()
-        return text, items
+        return info
+
+    def run(self, meta:typing.Dict):
+        text = self._try_request(meta)
+        items = self._try_parse(text)
+        if not isinstance(items, list):
+            items = [items]
+        _items = []
+        for item in items:
+            _item = self._try_build(item)
+            if _item:
+                _items.append(_item)
+        return _items
 
     def exec(self, meta: typing.Dict):
         result = {
@@ -96,21 +112,13 @@ class Task:
         start_time = time.time()
         del meta['__client_id__']
         del meta['__worker_id__']
+        del meta['__id__']
         del meta['__task__']
         try:
-            text = self._try_request(meta)
-            items = self._try_parse(text)
-            if not isinstance(items, list):
-                items = [items]
-            _items = []
-            for item in items:
-                _item = self._try_build(item)
-                if _item:
-                    _items.append(_item)
+            items = self.run(meta)
         except Exception as e:
             result['error'] = str(e)
         else:
-            result['source_text'] = text
             result['items'] = items
         finally:
             result['start_time'] = start_time

@@ -17,7 +17,6 @@ def url_is_pattern(url, allow=None, deny=None):
     # 定义基本的URL匹配正则表达式
     url_pattern = r"https?://[^\s]+"
     urls = re.findall(url_pattern, url)
-    print(urls)
     # 如果有allow_list，筛选符合任意allow规则的URL
     if allow:
         if isinstance(allow, str):

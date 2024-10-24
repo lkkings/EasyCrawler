@@ -11,7 +11,7 @@ Change Log  :
 
 """
 __author__ = "lkkings"
-__version__ = "0.1.0"
+__version__ = "0.1.2"
 __description_cn__ = "基于[red]反向连接[/red]的[green]分布式爬虫框架."
 __description_en__ = "[green] distributed crawler framework based on [red] backconnection[/red]."
 __reponame__ = "EasyCrawler"

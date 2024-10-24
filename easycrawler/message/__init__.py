@@ -21,6 +21,8 @@ redis_client = redis.Redis(connection_pool=connection_pool)
 
 filter_queue = NamedSet(redis_conn=redis_client, name=f'{project_id}:filter')
 
+r_filter_queue = NamedSet(redis_conn=redis_client, name=f'{project_id}:r_filter')
+
 task_queue = NamedList(redis_conn=redis_client, name=f'{project_id}:task:meta')
 
 result_queue = NamedList(redis_conn=redis_client, name=f'{project_id}:data')

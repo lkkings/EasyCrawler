@@ -45,9 +45,9 @@ def download_chunks(url, session, start, end, tmp_file_path, bar, headers, proxy
             bar.update(len(chunk))
 
 
-def get_file_info(url: str, session: Session, headers: Dict = None, proxy: str = None):
+def get_file_info(url: str, session: Session, headers: Dict = None, cookies: Dict = None, proxy: str = None):
     proxies = {'http': proxy, 'https': proxy} if proxy else None
-    response = session.head(url, headers=headers, proxies=proxies)
+    response = session.head(url, headers=headers, proxies=proxies,cookies=cookies)
     content_length = int(response.headers.get('Content-Length', 0))
     content_disposition = response.headers.get('Content-Disposition')
     if content_disposition:
@@ -80,18 +80,18 @@ def do_slice(content_length: int, slice_num: int) -> List:
     return slices_list
 
 
-def download(url: str, save_path, filename=None, headers=None, slice_num: int = 20, proxy=None,
+def download(url: str, save_path, filename=None, headers=None, cookies=None, slice_num: int = 20, proxy=None,
              timeout=None, file_type=None):
     headers = {} if not headers else headers
     proxies = {'http': proxy, 'https': proxy} if proxy else None
     with Session(timeout=timeout, proxies=proxies) as session:
-        _filename, file_extension, content_length = get_file_info(url, session, proxy)
+        _filename, file_extension, content_length = get_file_info(url, session, headers, cookies, proxy)
         if filename is None:
             filename = _filename
         if content_length == 0:
             raise DLException(f"链接 {url} 内容长度为0，请检查链接是否可用")
         file_path = osp.join(save_path, filename)
-        tmp_path = osp.join(save_path, filename)
+        tmp_path = osp.join(save_path, filename.split('.')[0])
         if osp.exists(tmp_path) and len(os.listdir(tmp_path)) != slice_num:
             shutil.rmtree(tmp_path)
         os.makedirs(save_path, exist_ok=True)
@@ -127,7 +127,6 @@ def download(url: str, save_path, filename=None, headers=None, slice_num: int = 
         shutil.rmtree(tmp_path)
 
 
-
 # 进度条钩子函数
 def progress_hook(d):
     if d['status'] == 'downloading':
@@ -142,7 +141,8 @@ def progress_hook(d):
 
 
 # 音视频下载方法
-def download_media(url, cookies=None, headers=None, output_path='downloads', file_format='best', is_audio=False):
+def download_media(url, cookies=None, headers=None, output_path='downloads', file_format='best', is_audio=False,
+                   filename=None, audio_format='mp3'):
     """
     下载音视频文件
 
@@ -152,22 +152,39 @@ def download_media(url, cookies=None, headers=None, output_path='downloads', fil
     :param output_path: 下载文件保存的路径，默认为'downloads'
     :param file_format: 文件格式，默认下载最佳格式
     :param is_audio: 如果为True，则仅下载音频，默认下载视频
+    :param filename: 自定义保存的文件名，默认为None
+    :param audio_format: 音频格式，支持 'mp3' 或 'wav'
     """
-    # 下载选项
-    ydl_opts = {
-        'format': file_format,  # 下载的文件格式
-        'outtmpl': f'{output_path}/%(title)s.%(ext)s',  # 自定义保存路径和文件名
-        'progress_hooks': [progress_hook],  # 进度条钩子
-    }
+    # 设置输出文件模板
+    if filename:
+        ydl_opts = {
+            'format': file_format,
+            'outtmpl': f'{output_path}/{filename}.%(ext)s',  # 使用用户提供的文件名
+        }
+    else:
+        ydl_opts = {
+            'format': file_format,
+            'outtmpl': f'{output_path}/%(title)s.%(ext)s',  # 默认使用视频标题
+        }
 
     # 如果只下载音频，设置音频后处理
     if is_audio:
         ydl_opts['format'] = 'bestaudio/best'
-        ydl_opts['postprocessors'] = [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',  # 音频转换为 mp3
-            'preferredquality': '192',  # 音频质量
-        }]
+        # 根据指定的音频格式进行处理
+        if audio_format == 'wav':
+            ydl_opts['postprocessors'] = [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'wav',
+                'preferredquality': '192',
+            }]
+        elif audio_format == 'mp3':
+            ydl_opts['postprocessors'] = [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }]
+        else:
+            raise ValueError("Unsupported audio format. Use 'mp3' or 'wav'.")
 
     # 设置 cookies
     if cookies:
@@ -195,22 +212,5 @@ def _create_cookie_file(cookies_dict):
 
 
 if __name__ == '__main__':
-    download(
-        'https://fus.cdn.krcom.cn/000o6Gv5lx07tWbL2SO40104120oU1jH0E090.mp4?label=mp4_1080p&template=1920x1080.20.0&ori=0&ps=1A34GSngUJylzX&Expires=1729248239&ssig=mbTeiLtsmn&KID=unistore,video',
-        save_path='test', headers={
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-            'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
-            'cache-control': 'max-age=0',
-            'if-none-match': '000o6Gv5lx07tWbL2SO40104120oU1jH0E090',
-            'priority': 'u=0, i',
-            'range': 'bytes=0-1048575',
-            'sec-ch-ua': '"Microsoft Edge";v="129", "Not=A?Brand";v="8", "Chromium";v="129"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"Windows"',
-            'sec-fetch-dest': 'document',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'none',
-            'sec-fetch-user': '?1',
-            'upgrade-insecure-requests': '1',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0',
-        }, slice_num=1)
+    download_media(
+        'https://ppvod01.blbtgg.com/splitOut/20241015/539505/V2024101517545277531539505/index.m3u8?auth_key=1729564296-73f319433de944e6ac0c3503926b867e-0-89ae51ebe225437d8d68b8fd86083807')

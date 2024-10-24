@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11\x65\x61sycrawler.proto\x12\x0b\x65\x61sycrawler\"(\n\x05\x43hunk\x12\x11\n\tclient_id\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c\"\x17\n\x07Message\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\":\n\x06Result\x12\x1f\n\x04\x63ode\x18\x01 \x01(\x0e\x32\x11.easycrawler.Code\x12\x0f\n\x07message\x18\x02 \x01(\t*\x98\x01\n\x04\x43ode\x12\x0b\n\x07SUCCESS\x10\x00\x12\x14\n\x10\x43LIENT_NOT_FOUND\x10\x01\x12\x13\n\x0fTASK_QUEUE_FULL\x10\x02\x12\x14\n\x10TASK_QUEUE_EMPTY\x10\x03\x12\x15\n\x11WORKER_NOT_UPDATE\x10\x04\x12\x17\n\x13\x43LIENT_RESULT_EMPTY\x10\x05\x12\x12\n\x0e\x43LIENT_IS_FULL\x10\x06\x32\x8e\x03\n\x12\x45\x61syCrawlerService\x12\x31\n\x04Push\x12\x12.easycrawler.Chunk\x1a\x13.easycrawler.Result(\x01\x12\x32\n\x04Pull\x12\x14.easycrawler.Message\x1a\x12.easycrawler.Chunk0\x01\x12\x34\n\x07\x41\x64\x64Meta\x12\x14.easycrawler.Message\x1a\x13.easycrawler.Result\x12\x34\n\x07GetMeta\x12\x14.easycrawler.Message\x1a\x13.easycrawler.Result\x12\x35\n\x08OnResult\x12\x14.easycrawler.Message\x1a\x13.easycrawler.Result\x12\x36\n\tGetResult\x12\x14.easycrawler.Message\x1a\x13.easycrawler.Result\x12\x36\n\tDelClient\x12\x14.easycrawler.Message\x1a\x13.easycrawler.Resultb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11\x65\x61sycrawler.proto\x12\x0b\x65\x61sycrawler\"(\n\x05\x43hunk\x12\x11\n\tclient_id\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c\"\x17\n\x07Message\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\":\n\x06Result\x12\x1f\n\x04\x63ode\x18\x01 \x01(\x0e\x32\x11.easycrawler.Code\x12\x0f\n\x07message\x18\x02 \x01(\t*\xb9\x01\n\x04\x43ode\x12\x0b\n\x07SUCCESS\x10\x00\x12\x14\n\x10\x43LIENT_NOT_FOUND\x10\x01\x12\x13\n\x0fTASK_QUEUE_FULL\x10\x02\x12\x14\n\x10TASK_QUEUE_EMPTY\x10\x03\x12\x15\n\x11WORKER_NOT_UPDATE\x10\x04\x12\x17\n\x13\x43LIENT_RESULT_EMPTY\x10\x05\x12\x12\n\x0e\x43LIENT_IS_FULL\x10\x06\x12\x14\n\x10\x43LIENT_IS_CLOSED\x10\x07\x12\t\n\x05\x45RROR\x10\x08\x32\x8e\x03\n\x12\x45\x61syCrawlerService\x12\x31\n\x04Push\x12\x12.easycrawler.Chunk\x1a\x13.easycrawler.Result(\x01\x12\x32\n\x04Pull\x12\x14.easycrawler.Message\x1a\x12.easycrawler.Chunk0\x01\x12\x34\n\x07\x41\x64\x64Meta\x12\x14.easycrawler.Message\x1a\x13.easycrawler.Result\x12\x34\n\x07GetMeta\x12\x14.easycrawler.Message\x1a\x13.easycrawler.Result\x12\x35\n\x08OnResult\x12\x14.easycrawler.Message\x1a\x13.easycrawler.Result\x12\x36\n\tGetResult\x12\x14.easycrawler.Message\x1a\x13.easycrawler.Result\x12\x36\n\tDelClient\x12\x14.easycrawler.Message\x1a\x13.easycrawler.Resultb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -22,13 +22,13 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'easycrawler_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
   _globals['_CODE']._serialized_start=162
-  _globals['_CODE']._serialized_end=314
+  _globals['_CODE']._serialized_end=347
   _globals['_CHUNK']._serialized_start=34
   _globals['_CHUNK']._serialized_end=74
   _globals['_MESSAGE']._serialized_start=76
   _globals['_MESSAGE']._serialized_end=99
   _globals['_RESULT']._serialized_start=101
   _globals['_RESULT']._serialized_end=159
-  _globals['_EASYCRAWLERSERVICE']._serialized_start=317
-  _globals['_EASYCRAWLERSERVICE']._serialized_end=715
+  _globals['_EASYCRAWLERSERVICE']._serialized_start=350
+  _globals['_EASYCRAWLERSERVICE']._serialized_end=748
 # @@protoc_insertion_point(module_scope)

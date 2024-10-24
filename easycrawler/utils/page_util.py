@@ -3,6 +3,7 @@ import threading
 import typing
 
 from DrissionPage import ChromiumOptions, ChromiumPage
+from easycrawler.utils.common import rate_limit
 
 
 class Pager:
@@ -20,7 +21,7 @@ class Pager:
             co.set_argument(
                 '--no-sandbox')
             co.set_argument("--disable-gpu")
-        co = co.no_imgs(True).no_js(True)
+        co = co.no_imgs(True).no_js(True).auto_port()
         return co
 
     def __enter__(self):
